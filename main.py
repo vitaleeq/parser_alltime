@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import parsing_functions as pf
 
 
-vendor_code = 'DW00100508'
+vendor_code = 'r10018'
 id_number = pf.get_product_id(vendor_code)
 print(f'{vendor_code}: {id_number}')
 print('___________________________________')

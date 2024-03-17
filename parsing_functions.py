@@ -26,16 +26,34 @@ def get_page(id_number):
         response = requests.request("GET", url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         tag = soup.find('dl')
-        dt_tags = tag.findAll('dt')
-        dd_tags = [dd.text for dd in tag.findAll('dd')]         # FIX ME
-        print(dt_tags)
-        print(*dd_tags)#, sep='\n\n')
+        #print(tag)
+        dt_tags = [dt.text for dt in tag.findAll('dt')]
+        dd_tags_raw = [dd.contents for dd in tag.findAll('dd')]
+        soup_for_dd_tags = BeautifulSoup(str(tag.findAll('dd')), 'html.parser')
+        while soup_for_dd_tags.div:
+            soup_for_dd_tags.div.decompose()
+        dd_tags = [dd.text for dd in soup_for_dd_tags.findAll('dd')]
+        #print(dt_tags)
+        #print(dd_tags)
+        properties = dict(zip(dt_tags, dd_tags))
+        print(properties)
+
+        #print(*dd_tags_raw, sep='\n\n')
         return tag
+
+        '''
+        r10018: 591236
+        dt_tags = [dt.text for dt in tag.findAll('dt')]           ----->   line 29
+        ________
+        AttributeError: 'NoneType' object has no attribute 'findAll'
+        Необходимо проверять, что после соединения нет пустых или неполных элементов хтмл-разметки,
+        для того чтобы избежать ошибки атрибутаю 
+        '''
     except TypeError:
         print("Didn't found such vendor code in db")
 
 
-def get_info_from_page(soup):
+def get_info_from_page(tag):
     body = ''
     back_cover = ''
     mechanism = ''
@@ -43,8 +61,13 @@ def get_info_from_page(soup):
     glass = ''
     additional_functions = ''
     insertions = ''
-    tags = soup.findAll('dl')
-    return tags
+
+    dt_tags = [dt.text for dt in tag.findAll('dt')]
+    dd_tags = [dd.text for dd in tag.findAll('dd')]  # FIX ME
+    print(f'{dt_tags=}')
+    print(*dd_tags)  # , sep='\n\n')
+
+    return dt_tags, dd_tags
 
 
 '''
