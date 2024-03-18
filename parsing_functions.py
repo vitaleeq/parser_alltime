@@ -25,19 +25,15 @@ def get_properties(id_number):
         }
         response = requests.request("GET", url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
-
-        tag = get_main_description(soup)
+        #tag1 = get_main_description(soup)
 
         try:
-            tag = soup.find('dl')
-            dt_tags = [dt.text for dt in tag.findAll('dt')]
-            soup_for_dd_tags = BeautifulSoup(str(tag.findAll('dd')), 'html.parser')
-            while soup_for_dd_tags.div:
-                soup_for_dd_tags.div.decompose()
-            dd_tags = [dd.text for dd in soup_for_dd_tags.findAll('dd')]
-            #print(dt_tags)
-            #print(dd_tags)
-            properties = dict(zip(dt_tags, dd_tags))
+            properties = get_info_from_page(soup)
+            description = get_main_description(soup)
+            properties['Описание'] = description
+            print(properties)
+            print('_________________________')
+            return properties
 
             #                   {'body_col': 'Корпус',
             #                    'back_cover_col': 'Задняя крышка',
@@ -48,8 +44,7 @@ def get_properties(id_number):
             #                    'additional_functions_col': 'Дополнительные функции',
             #                    'insertions_col': 'Вставки'
             #                   }
-            print(properties)
-            return properties
+
         except AttributeError:
             print('Something gone wrong')
             return {}
@@ -65,47 +60,29 @@ def get_properties(id_number):
         print("Didn't found such vendor code in db")
 
 
-def get_info_from_page(tag):
-    body = ''
-    back_cover = ''
-    mechanism = ''
-    bracelet = ''
-    glass = ''
-    additional_functions = ''
-    insertions = ''
-
+def get_info_from_page(soup):
+    tag = soup.find('dl')
     dt_tags = [dt.text for dt in tag.findAll('dt')]
-    dd_tags = [dd.text for dd in tag.findAll('dd')]  # FIX ME
-    print(f'{dt_tags=}')
-    print(*dd_tags)  # , sep='\n\n')
+    soup_for_dd_tags = BeautifulSoup(str(tag.findAll('dd')), 'html.parser')
+    while soup_for_dd_tags.div:
+        soup_for_dd_tags.div.decompose()
+    dd_tags = [dd.text for dd in soup_for_dd_tags.findAll('dd')]
+    # print(dt_tags)
+    # print(dd_tags)
+    properties = dict(zip(dt_tags, dd_tags))
 
-    return dt_tags, dd_tags
+    return properties
 
 
-def get_main_description(soup_object):
-    tag1 = soup_object.find('div', class_='page-text')
-    while tag1.p or tag1.dl:
+def get_main_description(soup):                  # FIXXXXXXXXXX ME
+    description = soup.find('div', class_='page-text')
+    while description.p or description.dl:
         try:
-            tag1.p.decompose()
-            tag1.dl.decompose()
+            description.p.decompose()
+            description.dl.decompose()
         except AttributeError:
             continue
-    tag1 = tag1.text
-    print(tag1, sep='\n')
-    return tag1
+    description = description.text
+    description = description[:description.find('Инструкция')].strip('\n').strip()
 
-'''
-    #taghref = soup.findAll('data-href')
-    print(page.status_code)
-    print(tag)
-    print('_____________________________________')
-    tag = soup.findAll('div', class_='catalog-item', k='2')
-    print(tag)
-    print('_____________________________________')
-    tag = soup.findAll('div', class_='catalog-item', k='3')
-    print(tag)
-    print('_____________________________________')
-    tag = soup.findAll('a', href=re.compile('SARY132'))
-    print(tag)
-    #print(soup.findAll('div', class_='catalog-items'))
-    #itemListElement'''
+    return description
