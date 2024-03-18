@@ -25,6 +25,10 @@ def get_properties(id_number):
         }
         response = requests.request("GET", url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
+
+        #tag1 = soup.find('div', class_='page-text').findAll('span', class_=False)   # Need new function here to get text of the left part of page
+        #print(*tag1, sep='\n')
+
         try:
             tag = soup.find('dl')
             dt_tags = [dt.text for dt in tag.findAll('dt')]
@@ -35,6 +39,16 @@ def get_properties(id_number):
             #print(dt_tags)
             #print(dd_tags)
             properties = dict(zip(dt_tags, dd_tags))
+
+            #                   {'body_col': 'Корпус',
+            #                    'back_cover_col': 'Задняя крышка',
+            #                    'mechanism_type_col': 'Тип механизма',
+            #                    'bracelet_col': 'Тип браслета',
+            #                    'indication_col': 'Индикация',
+            #                    'glass_col': 'Стекло',
+            #                    'additional_functions_col': 'Дополнительные функции',
+            #                    'insertions_col': 'Вставки'
+            #                   }
             print(properties)
             return properties
         except AttributeError:

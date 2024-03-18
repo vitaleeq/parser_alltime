@@ -5,17 +5,14 @@ import string
 def use_excel_file(filepath):
     sheet_name = input('Input sheet name: ')
     lst = input("Input vendor_code's column letter, first_row and last_row(e.g. B, 10, 64): ").split(', ')
-    print(lst)
     vendor_codes_col = [int(elem) if elem.isdigit() else string.ascii_uppercase.find(elem.upper()) for elem in lst]
-    print(vendor_codes_col)
     # Here we got smth like this: [1{0-26}, 10{1-inf}, 64{1-inf}]
 
     # load file, activate sheet in it, select targeted cell's
     wb = load_workbook(filename=filepath)
     wb_sheet = wb.active if sheet_name == '' else wb[sheet_name]
-    #body_col, back_cover_col, mechanism_type_col, bracelet_col, indication_col, glass_col, additional_functions_col, insertions_col = \
+    #body_col, back_cover_col, mechanism_type_col, bracelet_col, indication_col, glass_col, additional_functions_col, insertions_col
     required_cols = select_required_cols(vendor_codes_col[1] - 1, wb_sheet)
-
     print(required_cols)
 
     '''
@@ -51,5 +48,4 @@ def select_required_cols(attrs_row_number, wb_sheet):
                     continue
                 if search_dict[elem].strip().lower() in cell.value.strip().lower():
                     required_cols_dict[elem] = cell.coordinate
-    print(required_cols_dict)
     return required_cols_dict
