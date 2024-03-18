@@ -17,7 +17,7 @@ def get_product_id(vendor_code):
         print("Didn't found such vendor code in db")
 
 
-def get_page(id_number):
+def get_properties(id_number):
     try:
         url = 'https://www.alltime.ru/api/ajax/2020/product-mobile.php?ID=' + id_number + '&version=1.3'
         headers = {
@@ -25,29 +25,28 @@ def get_page(id_number):
         }
         response = requests.request("GET", url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
-        tag = soup.find('dl')
-        #print(tag)
-        dt_tags = [dt.text for dt in tag.findAll('dt')]
-        dd_tags_raw = [dd.contents for dd in tag.findAll('dd')]
-        soup_for_dd_tags = BeautifulSoup(str(tag.findAll('dd')), 'html.parser')
-        while soup_for_dd_tags.div:
-            soup_for_dd_tags.div.decompose()
-        dd_tags = [dd.text for dd in soup_for_dd_tags.findAll('dd')]
-        #print(dt_tags)
-        #print(dd_tags)
-        properties = dict(zip(dt_tags, dd_tags))
-        print(properties)
-
-        #print(*dd_tags_raw, sep='\n\n')
-        return tag
-
+        try:
+            tag = soup.find('dl')
+            dt_tags = [dt.text for dt in tag.findAll('dt')]
+            soup_for_dd_tags = BeautifulSoup(str(tag.findAll('dd')), 'html.parser')
+            while soup_for_dd_tags.div:
+                soup_for_dd_tags.div.decompose()
+            dd_tags = [dd.text for dd in soup_for_dd_tags.findAll('dd')]
+            #print(dt_tags)
+            #print(dd_tags)
+            properties = dict(zip(dt_tags, dd_tags))
+            print(properties)
+            return properties
+        except AttributeError:
+            print('Something gone wrong')
+            return {}
         '''
         r10018: 591236
         dt_tags = [dt.text for dt in tag.findAll('dt')]           ----->   line 29
-        ________
+        __________________________________________________________________________
         AttributeError: 'NoneType' object has no attribute 'findAll'
         Необходимо проверять, что после соединения нет пустых или неполных элементов хтмл-разметки,
-        для того чтобы избежать ошибки атрибутаю 
+        для того, чтобы избежать ошибки атрибутa.
         '''
     except TypeError:
         print("Didn't found such vendor code in db")
