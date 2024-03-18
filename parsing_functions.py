@@ -26,8 +26,7 @@ def get_properties(id_number):
         response = requests.request("GET", url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        #tag1 = soup.find('div', class_='page-text').findAll('span', class_=False)   # Need new function here to get text of the left part of page
-        #print(*tag1, sep='\n')
+        tag = get_main_description(soup)
 
         try:
             tag = soup.find('dl')
@@ -82,6 +81,18 @@ def get_info_from_page(tag):
 
     return dt_tags, dd_tags
 
+
+def get_main_description(soup_object):
+    tag1 = soup_object.find('div', class_='page-text')
+    while tag1.p or tag1.dl:
+        try:
+            tag1.p.decompose()
+            tag1.dl.decompose()
+        except AttributeError:
+            continue
+    tag1 = tag1.text
+    print(tag1, sep='\n')
+    return tag1
 
 '''
     #taghref = soup.findAll('data-href')
