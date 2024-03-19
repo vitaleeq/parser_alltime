@@ -3,15 +3,14 @@ import parsing_functions as pf
 import excel_functions as ef
 
 
-'''
+
 # 'Спецификация Tissot Daghaya.xlsx'    B, 10, 64
-ef.use_excel_file('Спецификация Tissot Daghaya.xlsx')
-'''
+#ef.use_excel_file('Спецификация Tissot Daghaya.xlsx')
 
 
-vendor_code = 'r18017'
+vendor_code = 'T0630091101800'
 id_number = pf.get_product_id(vendor_code)
 print(f'{vendor_code}: {id_number}')
 print('___________________________________')
 tag = pf.get_properties(id_number)
-#print(tag)
+print(f'required_properties = {tag}')

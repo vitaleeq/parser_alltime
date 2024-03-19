@@ -11,7 +11,7 @@ def use_excel_file(filepath):
     # load file, activate sheet in it, select targeted cell's
     wb = load_workbook(filename=filepath)
     wb_sheet = wb.active if sheet_name == '' else wb[sheet_name]
-    #body_col, back_cover_col, mechanism_type_col, bracelet_col, indication_col, glass_col, additional_functions_col, insertions_col
+    #body_col, back_cover_col, mechanism_type_col, bracelet_col, glass_col, additional_functions_col, insertions_col
     required_cols = select_required_cols(vendor_codes_col[1] - 1, wb_sheet)
     print(required_cols)
 
@@ -32,14 +32,13 @@ def create_new_filename(filepath):
 
 
 def select_required_cols(attrs_row_number, wb_sheet):
-    search_dict = {'body_col': 'Корпус',
-                   'back_cover_col': 'Задняя крышка',
-                   'mechanism_type_col': 'Тип механизма',
-                   'bracelet_col': 'Тип браслета',
-                   'indication_col': 'Индикация',
-                   'glass_col': 'Стекло',
-                   'additional_functions_col': 'Дополнительные функции',
-                   'insertions_col': 'Вставки'}
+    search_dict = {'body': 'Корпус',
+                   'back_cover': 'Задняя крышка',
+                   'mechanism_type': 'Тип механизма',
+                   'bracelet': 'Тип браслета',
+                   'glass': 'Стекло',
+                   'additional_functions': 'Дополнительные функции',
+                   'insertions': 'Вставки'}
     required_cols_dict = {}
     for elem in search_dict:
         for row in wb_sheet.iter_rows(min_row=attrs_row_number, max_row=attrs_row_number, min_col=wb_sheet.min_column, max_col=wb_sheet.max_column):
