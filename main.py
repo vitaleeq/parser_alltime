@@ -1,7 +1,37 @@
-from bs4 import BeautifulSoup
 import parsing_functions as pf
 import excel_functions as ef
+from bs4 import BeautifulSoup
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+
+
+vendor_code = 'AS.PT-SL3'
+id_number = pf.get_product_link(vendor_code)
+print(f'{vendor_code}: {id_number}')
+print('___________________________________')
+tag = pf.get_properties(id_number)
+print(f'required_properties = {tag}')
+print('***********************************')
+
+
+'''options = webdriver.ChromeOptions()
+options.add_experimental_option("detach", True)
+options.add_argument('--remote-debugging-port=9222')
+driverpath = Service('/home/vitaly/PycharmProjects/autospecification_dinara/chromedriver')
+driver = webdriver.Chrome(service=driverpath, options=options)
+#print(f"Page title was '{driver.title}'")
+#driver.get("https://www.alltime.com")
+try:
+    driver.get("https://www.alltime.ru/watch/seiko/SARY211/668458/")
+    print(driver.__dict__)
+    print(f"Page title was '{driver.title}'")
+    #print(driver.page_source)
+    print(driver.get_cookies())
+finally:
+    pass
+    #driver.quit()
+'''
 
 
 # 'Спецификация Tissot Daghaya.xlsx'    B, 10, 64
@@ -32,12 +62,3 @@ try to prettify it:
 so. we need to do requests for getting these cookies with first connection to server
 so. we need to find which children-requests do it after first reqests in this doc-string
 '''
-
-pf.get_cookie()
-vendor_code = 'T1010103345100'
-id_number = pf.get_product_id(vendor_code)
-print(f'{vendor_code}: {id_number}')
-print('___________________________________')
-tag = pf.get_properties(id_number)
-print(f'required_properties = {tag}')
-print('***********************************')
