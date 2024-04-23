@@ -1,18 +1,39 @@
-from openpyxl import load_workbook
 import string
+import parsing_functions as pf
+from openpyxl import load_workbook
 
 
 def use_excel_file(filepath):
     sheet_name = input('Input sheet name: ')
-    lst = input("Input vendor_code's column letter, first_row and last_row(e.g. B, 10, 64): ").split(', ')
+    lst = input("Input vendor_code's column letter, first_row and last_row(e.g. B, 10, 73): ").split(', ')
     vendor_codes_col = [int(elem) if elem.isdigit() else string.ascii_uppercase.find(elem.upper()) for elem in lst]
-    # Here we got smth like this: [1{0-26}, 10{1-inf}, 64{1-inf}]
+    # Можно добавить и использовать тут функцию, которая аналогично select_required_cols автоматически будет искать
+    # и использовать столбец с названием "Артикул"
+    # Here we got smth like this: [1{0-26}, 10{1-inf}, 73{1-inf}]
 
     # load file, activate sheet in it, select targeted cell's
     wb = load_workbook(filename=filepath)
     wb_sheet = wb.active if sheet_name == '' else wb[sheet_name]
     required_cols = select_required_cols(vendor_codes_col[1] - 1, wb_sheet)
-    print(required_cols)
+    # Here we got coords of required cols
+    print(f'{required_cols=}')
+    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+    try:
+        pf.create_driver()
+        for line in range(vendor_codes_col[1], vendor_codes_col[2]+1):
+            vendor_code = get_vendor_code(wb_sheet, line, vendor_codes_col[0])
+            print(f'{wb_sheet[line][vendor_codes_col[0]]}: {vendor_code}')
+            link = pf.get_product_link(vendor_code)
+            print(f'{vendor_code}: {link}')
+            print('___________________________________')
+            properties = pf.get_properties(link)
+            print(f'required_properties = {properties}')
+            print(f'{required_cols=}')
+            print('***********************************')
+            input_properties(wb_sheet, line, properties, required_cols)
+    except KeyboardInterrupt:
+        pf.quit_driver()
+    pf.quit_driver()
 
     '''
     # create dictionary with keys==cell's coords, values==cell's values
@@ -45,5 +66,22 @@ def select_required_cols(attrs_row_number, wb_sheet):
                 if cell.value is None:
                     continue
                 if search_dict[elem].strip().lower() in cell.value.strip().lower():
-                    required_cols_dict[elem] = cell.coordinate
+                    required_cols_dict[elem] = cell.column
     return required_cols_dict
+
+
+def get_vendor_code(wb_sheet, row, col):
+    vendor_code = wb_sheet[row][col].value
+    return vendor_code
+
+
+def input_properties(wb_sheet, line, properties, required_cols):
+    for key in properties:
+        #print(f'{key=}')
+        #print(f'{line=}')
+        #print(f'{required_cols[key]=}')
+        cell = wb_sheet[line][required_cols[key]-1]
+        #print(cell)
+        cell.value = properties[key]
+        print(f'{cell}: {cell.value}')
+        print('\n')
