@@ -1,18 +1,21 @@
 import parsing_functions as pf
 import excel_functions as ef
 from bs4 import BeautifulSoup
+import requests
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
 
-vendor_code = 'AS.PT-SL3'
+pf.create_driver()
+vendor_code = 'SARY213'
 id_number = pf.get_product_link(vendor_code)
 print(f'{vendor_code}: {id_number}')
 print('___________________________________')
-tag = pf.get_properties(id_number)
-print(f'required_properties = {tag}')
+properties = pf.get_properties(id_number)
+print(f'required_properties = {properties}')
 print('***********************************')
+pf.quit_driver()
 
 
 '''options = webdriver.ChromeOptions()
